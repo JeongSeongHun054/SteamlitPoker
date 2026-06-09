@@ -262,7 +262,7 @@ def build_pdf(filename="poker_analytics_portfolio.pdf"):
     story.append(Paragraph("원천 데이터는 플레이어들의 벳, 콜, 레이즈, 폴드 행동과 칩 변동이 서술형 영어 텍스트로 무질서하게 기술된 비정형 데이터입니다. 이를 RDBMS에 적재하기 위해 다음과 같은 전처리 엔진을 직접 개발하였습니다.", body_style))
     story.append(Paragraph("- <b>정규표현식(Regex) 엔진 설계</b>: 핸드 번호(`Hand #`), 참가 유저명, 블라인드 크기, 포지션(Dealer, Big Blind 등) 및 각 베팅 라운드(Pre-flop, Flop, Turn, River, Showdown)별 개별 베팅 텍스트를 고유 패턴으로 감지하여 추출.", bullet_style))
     story.append(Paragraph("- <b>데이터 정규화 및 적재</b>: 파서(`data_parser.py`)를 통해 추출된 데이터를 구조화된 JSON 및 DataFrame으로 변환한 뒤, SQLite/PostgreSQL 테이블 구조에 일치시켜 트랜잭션 단위로 일괄 적재(Batch Insert) 처리.", bullet_style))
-    story.append(Paragraph("- <b>동적 이중 DB 지원 설계</b>: SQLite 커넥터와 PostgreSQL 커넥터의 플레이스홀더(`?` vs `%s`) 차이를 동적으로 감지 및 맵핑하도록 추상화하여, 동일한 파싱 로직에서 인프라 마이그레이션 호환성을 확보.", bullet_style))
+    story.append(Paragraph("- <b>동적 이중 DB 지원 설계</b>: SQLite 커넥터와 PostgreSQL 커넥터의 플레이스홀더(SQLite의 '?'와 PostgreSQL의 '%s') 차이를 동적으로 감지 및 맵핑하도록 추상화하여, 동일한 파싱 로직에서 인프라 마이그레이션 호환성을 확보.", bullet_style))
     
     story.append(Spacer(1, 10))
     story.append(Paragraph("<b>[비정형 포커 로그 파싱용 정규표현식 예시 코드]</b>", body_style))
@@ -337,7 +337,7 @@ CREATE TABLE actions (
     story.append(Paragraph("2. 핵심 포커 KPI 분석 및 932명 플레이어 실증 통계", h1_style))
     story.append(Paragraph("포커는 불확실성 속에서 수학적 기대값과 유저의 심리적 전략이 작용하므로, 모바일 게임 서비스의 유저 행태 분석과 일치합니다. 본 플랫폼은 932명의 전체 플레이어 데이터를 기반으로 지표별 통계적 최적 범위를 도출하여 대시보드에 적용하였습니다.", body_style))
 
-    story.append(Paragraph("A. VPIP (자발적 칩 배팅율) 최적 범위: 15% ~ 25%", h2_style))
+    story.append(Paragraph("A. VPIP (자발적 칩 베팅률) 최적 범위: 15% ~ 25%", h2_style))
     story.append(Paragraph("VPIP는 참가비 외에 본인 의지로 칩을 투자한 비율입니다. 너무 낮으면 참가비 누수로 서서히 파산(VPIP < 15%)하고, 너무 높으면 불리한 패로 난입하여 평균 수익이 악화(VPIP > 25%)하는 실증적 데이터 증거를 확인하였습니다.", body_style))
     
     vpip_headers = ["VPIP 범위", "플레이어 수", "평균 누적 칩 손익", "분석 결과 해석 (쉬운 해설)"]
@@ -349,7 +349,7 @@ CREATE TABLE actions (
     story.append(build_korean_table(vpip_headers, vpip_rows, [90, 70, 100, 227], [3]))
     story.append(Spacer(1, 10))
 
-    story.append(Paragraph("B. PFR (선제 공격율) 최적 격차: VPIP와의 차이 5% 이내", h2_style))
+    story.append(Paragraph("B. PFR (선제 공격률) 최적 격차: VPIP와의 차이 5% 이내", h2_style))
     story.append(Paragraph("PFR은 프리플랍에서 주도적으로 레이즈를 쳐서 진입한 비율입니다. VPIP와의 격차가 5% 이내인 유저는 게임에 참여할 때 주도성을 갖추어 상대방의 포기를 유도(기권 승리)하는 반면, 5% 초과 유저는 수동적인 콜에 머물러 큰 손실을 보았습니다.", body_style))
     
     pfr_headers = ["VPIP-PFR 격차", "플레이어 수", "평균 누적 칩 손익", "분석 결과 해석 (쉬운 해설)"]
@@ -387,12 +387,12 @@ SELECT player_name, total_hands, vpip, pfr, win_rate, total_net_chips FROM playe
 
     # --- PAGE 5: KPI STATISTICS CONTINUED ---
     story.append(Paragraph("C. AF (공격성 수치) 최적 범위: 2.0 ~ 3.5", h2_style))
-    story.append(Paragraph("AF는 플랍 이후 상대 배팅에 콜한 횟수 대비 스스로 벳/레이즈를 한 비율입니다. AF가 2.0 미만인 플레이어들은 지나치게 소극적인 플레이로 끌려다녔으며, 3.5 초과 플레이어들은 무리한 블러핑 남발로 대규모 칩 유실을 겪었습니다.", body_style))
+    story.append(Paragraph("AF는 플랍 이후 상대 베팅에 콜한 횟수 대비 스스로 벳/레이즈를 한 비율입니다. AF가 2.0 미만인 플레이어들은 지나치게 소극적인 플레이로 끌려다녔으며, 3.5 초과 플레이어들은 무리한 블러핑 남발로 대규모 칩 유실을 겪었습니다.", body_style))
     
     af_headers = ["AF 범위", "플레이어 수", "평균 누적 칩 손익", "분석 결과 해석 (쉬운 해설)"]
     af_rows = [
         ["2.0 미만", "433명", "-12,939 칩", "공격적인 선공 없이 수동적으로 콜만 하여 손실이 크게 누적되었습니다."],
-        ["2.0 ~ 3.5 (적정)", "226명", "-23,531 칩", "주도적으로 배팅과 레이즈를 분배해 상대의 기권을 능동적으로 이끄는 최적 구간입니다."],
+        ["2.0 ~ 3.5 (적정)", "226명", "-23,531 칩", "주도적으로 베팅과 레이즈를 분배해 상대의 기권을 능동적으로 이끄는 최적 구간입니다."],
         ["3.5 초과", "273명", "-9,557 칩", "판돈 크기와 본인의 패 조합을 무시한 과다 공격과 허풍으로 손실이 증가한 패턴입니다."]
     ]
     story.append(build_korean_table(af_headers, af_rows, [90, 70, 100, 227], [3]))
@@ -415,7 +415,7 @@ SELECT player_name, total_hands, vpip, pfr, win_rate, total_net_chips FROM playe
     hero_headers = ["지표 종류", "Hero 실제 수치", "통계적 권장 기준", "플레이 상태 진단 결과"]
     hero_rows = [
         ["VPIP (자발적 참여율)", "19.39%", "15.0% ~ 25.0%", "적정 범위 안에서 불필요한 카드 버리기를 정상 수행 중 (양호)"],
-        ["PFR (선제 공격율)", "17.35%", "12.0% ~ 20.0%", "진입할 때 콜 대신 공격적 레이즈를 주도적으로 구사 중 (양호)"],
+        ["PFR (선제 공격률)", "17.35%", "12.0% ~ 20.0%", "진입할 때 콜 대신 공격적 레이즈를 주도적으로 구사 중 (양호)"],
         ["AF (공격성 수치)", "2.60", "2.0 ~ 3.5", "플랍 이후 수동 수비 대신 적절한 빈도로 베팅 공격성 유지 중 (최적)"],
         ["Win Rate (참여 승률)", "13.27%", "15.0% ~ 22.0%", "참여한 판 대비 쇼다운 승률 부족. 레이즈 후 상대 폴드 유도가 미흡하여 칩 손실 발생 (개선 요망)"]
     ]
@@ -427,7 +427,7 @@ SELECT player_name, total_hands, vpip, pfr, win_rate, total_net_chips FROM playe
     story.append(Paragraph("유저의 대량 이탈(Churn)과 행동 패턴의 병목을 규명하기 위해 인게임 마이크로 퍼널 분석과 플레이 스타일 코호트 자산 분석을 수행했습니다.", body_style))
 
     story.append(Paragraph("A. 베팅 스트리트 퍼널 (Street Funnel) 분석", h2_style))
-    story.append(Paragraph("일반적인 웹/앱 서비스의 퍼널 분석과 달리, 포커의 베팅 라운드 진행도(`Pre-flop` -> `Flop` -> `Turn` -> `River` -> `Showdown`)에서 발생하는 이탈(Fold)은 부정적인 서비스 이탈(Churn)이 아닙니다. 이는 자신의 칩 손실을 최소화하기 위한 플레이어의 <b>'자발적 리스크 제어 행동'</b>으로 도메인을 올바르게 해석해야 합니다.", body_style))
+    story.append(Paragraph("일반적인 웹/앱 서비스의 퍼널 분석과 달리, 포커의 베팅 라운드 진행도('Pre-flop' -> 'Flop' -> 'Turn' -> 'River' -> 'Showdown')에서 발생하는 이탈(Fold)은 부정적인 서비스 이탈(Churn)이 아닙니다. 이는 자신의 칩 손실을 최소화하기 위한 플레이어의 <b>'자발적 리스크 제어 행동'</b>으로 도메인을 올바르게 해석해야 합니다.", body_style))
     
     funnel_headers = ["베팅 라운드 단계", "누적 전환율", "단계별 이탈률", "포커 도메인 관점의 데이터 해석"]
     funnel_rows = [
@@ -447,8 +447,8 @@ SELECT player_name, total_hands, vpip, pfr, win_rate, total_net_chips FROM playe
     cohort_rows = [
         ["Tight-Aggressive (타이트-공격형)", "VPIP < 22%, PFR-gap < 5%", "가장 안정적인 자산 보존", "강한 카드로만 선제 레이즈 진입하여 장기 누적 칩 획득 효율이 최고 수준임."],
         ["Loose-Aggressive (루즈-공격형)", "VPIP > 22%, PFR-gap < 5%", "세션 중후반 급변동성", "참여판이 많아 이길 때 크게 벌지만, 허풍 노출 시 올인 한 번으로 파산 위험이 큼."],
-        ["Tight-Passive (타이트-수동형)", "VPIP < 22%, PFR-gap > 5%", "완만하고 지속적인 우하향", "무리한 배팅은 안 하나 타인의 배팅에 수동적 콜로만 응수하다 참가비 지출 누적으로 고사함."],
-        ["Loose-Passive (루즈-수동형)", "VPIP > 22%, PFR-gap > 5%", "가장 가파른 속도로 우하향", "카드 효율도 나쁘고 배팅 주도권도 없어 타인에게 지배당하며 가장 빠르게 파산함."]
+        ["Tight-Passive (타이트-수동형)", "VPIP < 22%, PFR-gap > 5%", "완만하고 지속적인 우하향", "무리한 베팅은 안 하나 타인의 베팅에 수동적 콜로만 응수하다 참가비 지출 누적으로 고사함."],
+        ["Loose-Passive (루즈-수동형)", "VPIP > 22%, PFR-gap > 5%", "가장 가파른 속도로 우하향", "카드 효율도 나쁘고 베팅 주도권도 없어 타인에게 지배당하며 가장 빠르게 파산함."]
     ]
     story.append(build_korean_table(cohort_headers, cohort_rows, [130, 90, 110, 157], [3]))
     story.append(PageBreak())
@@ -460,13 +460,34 @@ SELECT player_name, total_hands, vpip, pfr, win_rate, total_net_chips FROM playe
     story.append(Paragraph("A. A/B 테스트: 프리미엄 핸드 선제 레이즈의 수익 효율성 검정", h2_style))
     story.append(Paragraph("가장 높은 등급의 프리미엄 카드(AA, KK, QQ)를 잡았을 때, 프리플랍 단계에서 <b>[A그룹: 선제 레이즈로 주도권을 잡은 경우]</b>와 <b>[B그룹: 수동적인 단순 콜로 참여한 경우]</b>의 최종 net_chips 수익 차이에 대한 독립표본 T-검정을 수행했습니다.", body_style))
     
-    ab_headers = ["실험 집단", "표본 수", "평균 획득 칩", "중앙값 칩", "독립표본 T-검정 결과 및 통계적 의사결정"]
+    ab_headers = ["실험 집단 (A/B 테스트)", "표본 수 (N)", "평균 획득 칩", "중앙값 칩 (Median)"]
     ab_rows = [
-        ["A그룹 (선제 레이즈)", "386건", "3,656 칩", "3,858 칩", "T-통계량: 0.4734 / p-value: 0.6372\\n\\n[의사결정]: p-value가 유의수준 0.05보다 훨씬 크므로 귀무가설(두 그룹 간 수익 평균 차이는 없다)을 채택."],
-        ["B그룹 (단순 콜 진입)", "64건", "2,436 칩", "548 칩", ""]
+        ["A그룹 (선제 레이즈로 주도권 확보)", "386건", "3,656 칩", "3,858 칩"],
+        ["B그룹 (수동적인 단순 콜로 진입)", "64건", "2,436 칩", "548 칩"]
     ]
-    story.append(build_korean_table(ab_headers, ab_rows, [110, 60, 80, 70, 167], [4]))
-    story.append(Spacer(1, 10))
+    story.append(build_korean_table(ab_headers, ab_rows, [150, 90, 120, 127], []))
+    story.append(Spacer(1, 8))
+
+    # T-검정 결과 전용 스타일 및 내용 추가 (B그룹 빈 칸 문제 해결 및 시각적 가독성 제고)
+    ab_result_style = ParagraphStyle(
+        name='ABResultStyle',
+        fontName='NanumGothic',
+        fontSize=8,
+        leading=11.5,
+        textColor=colors.HexColor('#1E293B'),
+        backColor=colors.HexColor('#F8FAFC'),
+        borderColor=colors.HexColor('#E2E8F0'),
+        borderWidth=0.5,
+        borderPadding=8,
+        spaceAfter=10
+    )
+    ab_result_text = (
+        "<b>[독립표본 T-검정(Independent two-sample T-test) 통계 분석 결과]</b><br/>"
+        "• <b>검정 통계량 (T-statistic)</b>: 0.4734 &nbsp;&nbsp;|&nbsp;&nbsp; <b>유의 확률 (p-value)</b>: 0.6372<br/>"
+        "• <b>통계적 의사결정</b>: p-value가 유의수준 0.05보다 크므로 귀무가설(두 그룹 간 수익 평균 차이는 없다)을 채택합니다. 즉, 프리미엄 핸드 진입 시 선제 공격을 가한 그룹의 평균 수익(3,656 칩)이 단순 콜 그룹(2,436 칩)보다 통계적으로 유의미하게 크다고 결론지을 수 없습니다."
+    )
+    story.append(Paragraph(ab_result_text, ab_result_style))
+    
     story.append(Paragraph("- <b>귀무가설 채택의 도메인적 원인 진단</b>: 포커 게임 특성상 손익 변동성(표준편차 약 1.8만 칩)이 집단 간 평균 차이(1,220 칩)보다 15배 이상 거대하여, 평균 차이가 노이즈에 묻혔기 때문입니다.", bullet_style))
     story.append(Paragraph("- <b>분석가적 보완 제언</b>: 단순 기각으로 끝내지 않고, <b>1) 아웃라이어 정제(올인 칩 변동값 윈저라이징 보정)</b> 및 <b>2) B그룹 표본 크기 확장을 위한 추가 로그 적재</b> 후 2차 재검정을 실시하는 액션 아이템 수립.", bullet_style))
     
@@ -476,8 +497,18 @@ SELECT player_name, total_hands, vpip, pfr, win_rate, total_net_chips FROM playe
     
     ml_headers = ["단계", "적용 알고리즘", "피처 구성 및 스케일링 필요성", "모델 평가지표 및 활용 방안"]
     ml_rows = [
-        ["행동 세분화\\n(비지도학습)", "K-Means\\nClustering", "피처: VPIP, PFR, AF\\n\\n[스케일링]: VPIP(0~100)와 AF(0~5)의 크기 편차에 의한 거리 왜곡을 방지하기 위해 Standard Scaler 적용 필수.", "실제 군집 분포 분석을 바탕으로 타이트-공격형, 루즈-수동형 등의 유저 스타일 세분화 및 맞춤형 밸런싱 가이드라인 제공."],
-        ["쇼다운 진출 예측\\n(지도학습)", "Random Forest\\nClassifier", "피처: 포지션, 프리플랍 액션 수, 칩 스택 규모, 카드 등급 등\\n\\n[타겟]: 최종 쇼다운 진출 여부 (0 또는 1)", "정확도: 84% / ROC-AUC: 0.91\\n정밀도(Precision): 78% / 재현율(Recall): 81%\\n\\n[용도]: 실시간 플레이 스타일 예측 엔진 탑재."]
+        [
+            "행동 세분화<br/>(비지도학습)", 
+            "K-Means<br/>Clustering", 
+            "• 피처: VPIP, PFR, AF<br/>• 스케일링: VPIP(0~100)와 AF(0~5)의 크기 편차가 크므로 거리 왜곡 방지를 위해 StandardScaler 적용 필수.", 
+            "실제 군집 분포 분석을 바탕으로 타이트-공격형(TAG), 루즈-수동형(LP) 등의 유저 스타일 세분화 및 맞춤형 밸런싱 가이드라인 제공."
+        ],
+        [
+            "쇼다운 진출 예측<br/>(지도학습)", 
+            "Random Forest<br/>Classifier", 
+            "• 피처: 포지션, 프리플랍 액션 수, 칩 스택 규모, 카드 등급 등<br/>• 타겟: 최종 쇼다운 진출 여부 (0 또는 1)", 
+            "• 정확도: 84% / ROC-AUC: 0.91<br/>• 정밀도(Precision): 78% / 재현율(Recall): 81%<br/>• 용도: 실시간 플레이 스타일 예측 엔진 탑재."
+        ]
     ]
     story.append(build_korean_table(ml_headers, ml_rows, [85, 90, 150, 162], [2, 3]))
     story.append(PageBreak())
@@ -519,7 +550,7 @@ SELECT player_name, total_hands, vpip, pfr, win_rate, total_net_chips FROM playe
     story.append(Paragraph("A2. 개별 판(Hand) 내에서 폴드는 유저가 게임을 영구 중단하는 Churn이 아니라, 나쁜 카드로부터 자산을 지키는 주도적인 '리스크 관리 행동'입니다. 따라서 폴드는 단기적인 베팅 라운드 진행 퍼널(마이크로 퍼널)로 한정하여 단계별 생존율을 분석하고, 유저의 진짜 장기 이탈은 '칩 자산을 전부 잃고 파산(Bust-out)하여 영구히 접속을 중단하는 형태'로 엄격히 분리해 정의하였습니다.", faq_style_a))
 
     story.append(Paragraph("<b>Q3. SQLite와 PostgreSQL의 기술적 차이점과 본 프로젝트의 호환 전략은 무엇인가요?</b>", faq_style_q))
-    story.append(Paragraph("A3. SQLite는 서버가 없는 단일 파일 기반으로 작동하여 쓰기 발생 시 DB 전체 락이 걸리므로 동시 처리가 어렵습니다. 반면 PostgreSQL은 MVCC(다중 버전 동시성 제어) 모델을 지원해 고성능 다중 사용자 트랜잭션 처리에 최적화되어 있습니다. 마이그레이션 시 SQL Dialect(방언) 문법 차이(SQLite의 `INSERT OR IGNORE` vs PostgreSQL의 `ON CONFLICT DO NOTHING` 등)가 발생하는데, 본 프로젝트에서는 데이터 파서와 대시보드 쿼리 엔진 단에서 DB 커넥터와 바인딩 플레이스홀더(`?` 대 `%s`)를 유동적으로 스위칭하도록 개발하여 두 RDBMS에 대해 투명한 아키텍처 결합도 해제(Decoupling)를 구현했습니다.", faq_style_a))
+    story.append(Paragraph("A3. SQLite는 서버가 없는 단일 파일 기반으로 작동하여 쓰기 발생 시 DB 전체 락이 걸리므로 동시 처리가 어렵습니다. 반면 PostgreSQL은 MVCC(다중 버전 동시성 제어) 모델을 지원해 고성능 다중 사용자 트랜잭션 처리에 최적화되어 있습니다. 마이그레이션 시 SQL Dialect(방언) 문법 차이(SQLite의 `INSERT OR IGNORE` vs PostgreSQL의 `ON CONFLICT DO NOTHING` 등)가 발생하는데, 본 프로젝트에서는 데이터 파서와 대시보드 쿼리 엔진 단에서 DB 커넥터와 바인딩 플레이스홀더(SQLite의 '?'와 PostgreSQL의 '%s')를 유동적으로 스위칭하도록 개발하여 두 RDBMS에 대해 투명한 아키텍처 결합도 해제(Decoupling)를 구현했습니다.", faq_style_a))
 
     # PDF 빌드 실행
     doc.build(story, canvasmaker=NumberedCanvas, onFirstPage=draw_cover_background)
