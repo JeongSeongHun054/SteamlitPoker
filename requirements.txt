@@ -6,3 +6,4 @@ scipy
 streamlit
 psycopg2-binary
 koreanize-matplotlib
+reportlab
