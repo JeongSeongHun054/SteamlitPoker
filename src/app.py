@@ -33,9 +33,22 @@ except ImportError:
     POSTGRES_AVAILABLE = False
 
 # matplotlib 한글 폰트 설정 (대시보드 내부 차트 대응 - 로컬/클라우드 범용 지원)
-try:
-    import koreanize_matplotlib
-except ImportError:
+import matplotlib.font_manager as fm
+import urllib.request
+
+font_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "NanumGothic.ttf"))
+if not os.path.exists(font_path):
+    try:
+        url = "https://github.com/google/fonts/raw/main/ofl/nanumgothic/NanumGothic-Regular.ttf"
+        urllib.request.urlretrieve(url, font_path)
+    except Exception as e:
+        pass
+
+if os.path.exists(font_path):
+    fm.fontManager.addfont(font_path)
+    prop = fm.FontProperties(fname=font_path)
+    plt.rcParams['font.family'] = prop.get_name()
+else:
     plt.rcParams['font.family'] = 'Malgun Gothic'
 plt.rcParams['axes.unicode_minus'] = False
 
