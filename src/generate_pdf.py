@@ -203,6 +203,7 @@ def build_pdf(filename="poker_analytics_portfolio.pdf"):
     meta_data = [
         [Paragraph("<b>프로젝트 명</b>", cover_meta_style), Paragraph("Streamlit Poker Analytics Platform", cover_meta_style)],
         [Paragraph("<b>지원자 성명</b>", cover_meta_style), Paragraph("정성훈 (Jeong SeongHun)", cover_meta_style)],
+        [Paragraph("<b>대시보드 URL</b>", cover_meta_style), Paragraph("https://steamlitpoker-ka3euwkjr5pzlx3carhrxj.streamlit.app/", cover_meta_style)],
         [Paragraph("<b>GitHub 저장소</b>", cover_meta_style), Paragraph("https://github.com/JeongSeongHun054/SteamlitPoker.git", cover_meta_style)],
         [Paragraph("<b>주요 기술 스택</b>", cover_meta_style), Paragraph("Python, Streamlit, SQLite, PostgreSQL, Regex, Matplotlib, Scipy, Scikit-Learn", cover_meta_style)],
         [Paragraph("<b>작성 일자</b>", cover_meta_style), Paragraph("2026년 6월", cover_meta_style)],
