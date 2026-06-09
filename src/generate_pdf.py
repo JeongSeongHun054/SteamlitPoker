@@ -262,7 +262,7 @@ def build_pdf(filename="poker_analytics_portfolio.pdf"):
     story.append(Paragraph("원천 데이터는 플레이어들의 벳, 콜, 레이즈, 폴드 행동과 칩 변동이 서술형 영어 텍스트로 무질서하게 기술된 비정형 데이터입니다. 이를 RDBMS에 적재하기 위해 다음과 같은 전처리 엔진을 직접 개발하였습니다.", body_style))
     story.append(Paragraph("- <b>정규표현식(Regex) 엔진 설계</b>: 핸드 번호(`Hand #`), 참가 유저명, 블라인드 크기, 포지션(Dealer, Big Blind 등) 및 각 베팅 라운드(Pre-flop, Flop, Turn, River, Showdown)별 개별 베팅 텍스트를 고유 패턴으로 감지하여 추출.", bullet_style))
     story.append(Paragraph("- <b>데이터 정규화 및 적재</b>: 파서(`data_parser.py`)를 통해 추출된 데이터를 구조화된 JSON 및 DataFrame으로 변환한 뒤, SQLite/PostgreSQL 테이블 구조에 일치시켜 트랜잭션 단위로 일괄 적재(Batch Insert) 처리.", bullet_style))
-    story.append(Paragraph("- <b>동적 이중 DB 지원 설계</b>: SQLite 커넥터와 PostgreSQL 커넥터의 플레이스홀더(SQLite의 '?'와 PostgreSQL의 '%s') 차이를 동적으로 감지 및 맵핑하도록 추상화하여, 동일한 파싱 로직에서 인프라 마이그레이션 호환성을 확보.", bullet_style))
+    story.append(Paragraph("- <b>동적 이중 DB 지원 설계</b>: SQLite 커넥터와 PostgreSQL 커넥터의 SQL 파라미터 바인딩 기호(SQLite의 물음표 '?' 기호와 PostgreSQL/psycopg2의 문자열 포맷 형식 '%s' 기호) 차이를 동적으로 감지 및 맵핑하도록 추상화하여, 동일한 파싱 로직에서 인프라 마이그레이션 호환성을 확보.", bullet_style))
     
     story.append(Spacer(1, 10))
     story.append(Paragraph("<b>[비정형 포커 로그 파싱용 정규표현식 예시 코드]</b>", body_style))
@@ -550,7 +550,7 @@ SELECT player_name, total_hands, vpip, pfr, win_rate, total_net_chips FROM playe
     story.append(Paragraph("A2. 개별 판(Hand) 내에서 폴드는 유저가 게임을 영구 중단하는 Churn이 아니라, 나쁜 카드로부터 자산을 지키는 주도적인 '리스크 관리 행동'입니다. 따라서 폴드는 단기적인 베팅 라운드 진행 퍼널(마이크로 퍼널)로 한정하여 단계별 생존율을 분석하고, 유저의 진짜 장기 이탈은 '칩 자산을 전부 잃고 파산(Bust-out)하여 영구히 접속을 중단하는 형태'로 엄격히 분리해 정의하였습니다.", faq_style_a))
 
     story.append(Paragraph("<b>Q3. SQLite와 PostgreSQL의 기술적 차이점과 본 프로젝트의 호환 전략은 무엇인가요?</b>", faq_style_q))
-    story.append(Paragraph("A3. SQLite는 서버가 없는 단일 파일 기반으로 작동하여 쓰기 발생 시 DB 전체 락이 걸리므로 동시 처리가 어렵습니다. 반면 PostgreSQL은 MVCC(다중 버전 동시성 제어) 모델을 지원해 고성능 다중 사용자 트랜잭션 처리에 최적화되어 있습니다. 마이그레이션 시 SQL Dialect(방언) 문법 차이(SQLite의 `INSERT OR IGNORE` vs PostgreSQL의 `ON CONFLICT DO NOTHING` 등)가 발생하는데, 본 프로젝트에서는 데이터 파서와 대시보드 쿼리 엔진 단에서 DB 커넥터와 바인딩 플레이스홀더(SQLite의 '?'와 PostgreSQL의 '%s')를 유동적으로 스위칭하도록 개발하여 두 RDBMS에 대해 투명한 아키텍처 결합도 해제(Decoupling)를 구현했습니다.", faq_style_a))
+    story.append(Paragraph("A3. SQLite는 서버가 없는 단일 파일 기반으로 작동하여 쓰기 발생 시 DB 전체 락이 걸리므로 동시 처리가 어렵습니다. 반면 PostgreSQL은 MVCC(다중 버전 동시성 제어) 모델을 지원해 고성능 다중 사용자 트랜잭션 처리에 최적화되어 있습니다. 마이그레이션 시 SQL Dialect(방언) 문법 차이(SQLite의 `INSERT OR IGNORE` vs PostgreSQL의 `ON CONFLICT DO NOTHING` 등)가 발생하는데, 본 프로젝트에서는 데이터 파서와 대시보드 쿼리 엔진 단에서 DB 커넥터와 SQL 파라미터 바인딩 기호(SQLite의 물음표 '?' 기호와 PostgreSQL의 '%s' 기호)를 유동적으로 스위칭하도록 개발하여 두 RDBMS에 대해 투명한 아키텍처 결합도 해제(Decoupling)를 구현했습니다.", faq_style_a))
 
     # PDF 빌드 실행
     doc.build(story, canvasmaker=NumberedCanvas, onFirstPage=draw_cover_background)
