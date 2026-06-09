@@ -175,7 +175,8 @@ pg_info = {}
 
 if db_option == "SQLite (기본 로컬 파일)":
     selected_db_type = "sqlite"
-    sqlite_path = st.sidebar.text_input("SQLite 파일 경로", value="../poker_data.db")
+    default_db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "poker_data.db"))
+    sqlite_path = st.sidebar.text_input("SQLite 파일 경로", value=default_db_path)
     if not os.path.exists(sqlite_path):
         conn_error = f"SQLite 파일을 찾을 수 없습니다. 경로: {sqlite_path}"
 else:
