@@ -25,6 +25,20 @@ st.set_page_config(
     layout="wide"
 )
 
+# --- 다국어 설정 및 라우팅 ---
+if 'lang' not in st.session_state:
+    st.session_state['lang'] = 'KO'
+
+lang_label = "🌐 Language / Select language" if st.session_state['lang'] == 'EN' else "🌐 Language / 언어 선택"
+lang_choice = st.sidebar.radio(lang_label, ["한국어", "English"], index=0 if st.session_state['lang'] == 'KO' else 1)
+st.session_state['lang'] = 'EN' if lang_choice == "English" else 'KO'
+
+if st.session_state['lang'] == 'EN':
+    import app_en
+    app_en.main()
+    st.stop()
+# ------------------------------
+
 # psycopg2 임포트 가능성 확인
 try:
     import psycopg2
