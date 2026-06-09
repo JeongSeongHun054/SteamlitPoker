@@ -5,3 +5,4 @@ seaborn
 scipy
 streamlit
 psycopg2-binary
+koreanize-matplotlib

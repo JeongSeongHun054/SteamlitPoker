@@ -32,8 +32,11 @@ try:
 except ImportError:
     POSTGRES_AVAILABLE = False
 
-# matplotlib 한글 폰트 설정 (대시보드 내부 차트 대응)
-plt.rcParams['font.family'] = 'Malgun Gothic'
+# matplotlib 한글 폰트 설정 (대시보드 내부 차트 대응 - 로컬/클라우드 범용 지원)
+try:
+    import koreanize_matplotlib
+except ImportError:
+    plt.rcParams['font.family'] = 'Malgun Gothic'
 plt.rcParams['axes.unicode_minus'] = False
 
 # -------------------------------------------------------------------------
