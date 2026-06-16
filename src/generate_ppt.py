@@ -58,7 +58,7 @@ def add_header(slide, title_text, category_text="PORTFOLIO PRESENTATION"):
     p_title.font.color.rgb = TEXT_WHITE
 
 def add_card(slide, left, top, width, height, title_text, text_lines):
-    """SaaS 스타일 내용 카드 추가"""
+    """SaaS 스타일 내용 카드 추가 (오버플로우 방지 튜닝 완료)"""
     # 카드 모양 (둥근 직사각형)
     shape = slide.shapes.add_shape(
         MSO_SHAPE.ROUNDED_RECTANGLE, 
@@ -69,10 +69,10 @@ def add_card(slide, left, top, width, height, title_text, text_lines):
     shape.line.color.rgb = RGBColor(71, 85, 105) # Slate 600 경계선
     shape.line.width = Pt(1)
     
-    # 카드 텍스트 프레임 생성
+    # 카드 텍스트 프레임 생성 (여백 최소화)
     tb = slide.shapes.add_textbox(
-        Inches(left + 0.3), Inches(top + 0.3), 
-        Inches(width - 0.6), Inches(height - 0.6)
+        Inches(left + 0.25), Inches(top + 0.25), 
+        Inches(width - 0.5), Inches(height - 0.5)
     )
     tf = tb.text_frame
     tf.word_wrap = True
@@ -82,23 +82,22 @@ def add_card(slide, left, top, width, height, title_text, text_lines):
     p_title = tf.paragraphs[0]
     p_title.text = title_text
     p_title.font.name = FONT_TITLE
-    p_title.font.size = Pt(18)
+    p_title.font.size = Pt(16)  # 18pt -> 16pt로 축소해 세로 공간 확보
     p_title.font.bold = True
     p_title.font.color.rgb = ACCENT_TEAL
-    p_title.space_after = Pt(14)
+    p_title.space_after = Pt(10) # 간격 축소
     
     # 카드 본문 라인 추가
     for line in text_lines:
         p = tf.add_paragraph()
         p.text = line
         p.font.name = FONT_TITLE
-        p.font.size = Pt(13)
+        p.font.size = Pt(11)  # 13pt -> 11pt로 최적화 (텍스트 잘림 현상 방지)
         p.font.color.rgb = TEXT_MUTED
-        p.space_after = Pt(8)
+        p.space_after = Pt(4) # 간격 8pt -> 4pt로 축소
         
         # 특정 키워드가 포함될 경우 폰트 색상 및 굵기 하이라이트
         if "★" in line or "**" in line:
-            # 마커 기호 제거 후 가공
             clean_text = line.replace("★", "").replace("**", "")
             p.text = clean_text
             p.font.bold = True
@@ -150,6 +149,17 @@ def main():
     # 16:9 와이드스크린 치수 설정 (13.33인치 x 7.5인치)
     prs.slide_width = Inches(13.33)
     prs.slide_height = Inches(7.5)
+    
+    # 공통 레이아웃 좌표 설정 (세로폭 확장: top=1.5, height=5.2)
+    CARD_LEFT = 0.8
+    CARD_TOP = 1.5
+    CARD_WIDTH = 5.6
+    CARD_HEIGHT = 5.2
+    
+    IMG_LEFT = 6.9
+    IMG_TOP = 1.5
+    IMG_WIDTH = 5.6
+    IMG_HEIGHT = 4.2
     
     # =========================================================================
     # SLIDE 1: Title Slide (표지)
@@ -221,26 +231,26 @@ def main():
     add_header(slide2, "01. 프로젝트 배경 및 의사결정 목적", "BACKGROUND & OBJECTIVES")
     
     add_card(
-        slide2, 0.8, 1.8, 5.6, 4.8, 
+        slide2, CARD_LEFT, CARD_TOP, CARD_WIDTH, CARD_HEIGHT, 
         "비즈니스 분석 및 의사결정 목적",
         [
             "■ 분석 배경 및 문제 정의",
-            "  - iGaming 서비스의 핵심은 유저 파산 및 이탈(Churn) 방어",
-            "  - 올바른 플레이 가이드 부재로 인한 급격한 유저 이탈 직면",
+            "  - iGaming 플랫폼의 핵심 과제: 유저 파산 및 이탈(Churn) 방어",
+            "  - 올바른 플레이 가이드 부재로 인한 급격한 고객 이탈 직면",
             "",
             "■ 지표 분석 및 발견점 (Insight)",
-            "  - VPIP, PFR, AF 지표 마트 구축 및 다차원 현황 분석",
-            "  - 수동적 진입 유저(Loose-Passive)가 가장 심각한 칩 손실",
-            "    (평균 -16,393 칩스 적자)을 내며 이탈한다는 사실 규명",
+            "  - VPIP, PFR, AF 지표 마트 구축을 통한 다차원 현황 분석",
+            "  - 소극적 유저(Loose-Passive)가 가장 심각한 수준인",
+            "    평균 -16,393 칩스 적자를 겪으며 파산/이탈함을 규명",
             "",
             "■ ★데이터 기반 최종 의사결정 (Core Decision)",
-            "  - 유저 이탈을 막기 위해 단순히 공식을 나열하는 대신,",
-            "  - **'유저가 본인의 지표를 변경했을 때 미래의 자산 파산 추이를 모의실험해볼 수 있는 실시간 시뮬레이션(Sandbox) 기능을 대시보드 플랫폼에 신설 및 상용 배포하기로 결정'**함."
+            "  - 유저 이탈을 방지하고 전략 개선을 유도하기 위해,",
+            "  - **'본인 지표 변경 시 미래의 자산 파산 추이를 모의실험해볼 수 있는 실시간 시뮬레이션(Sandbox) 기능을 대시보드에 신설 및 상용 배포 결정'**함."
         ]
     )
     
     # 우측 Streamlit 대시보드 화면 연동
-    add_image_or_placeholder(slide2, "tab1_overview_1781002564252.png", 6.9, 1.8, 5.6, 4.2)
+    add_image_or_placeholder(slide2, "tab1_overview_1781002564252.png", IMG_LEFT, IMG_TOP, IMG_WIDTH, IMG_HEIGHT)
     
     # 슬라이드 2 노트 설정
     set_presenter_notes(slide2, """[슬라이드 2 발표 대본]
@@ -250,7 +260,7 @@ def main():
 
 우측 화면의 '핵심 지표 요약 대시보드' 렌더링 화면을 보시면 알 수 있듯이, 저는 플레이어들의 베팅 지표인 VPIP, PFR, AF 지표 마트를 구축하고 다차원 분석을 진행했습니다. 분석 결과, 적극적으로 베팅하지 않고 소심하게 남의 베팅만 콜하고 따라간 'Loose-Passive' 유저 집단이 가장 심각한 수준인 평균 -16,393 칩의 적자를 내며 파산해 이탈한다는 구체적 사실을 밝혀냈습니다.
 
-이 데이터를 근거로, 저는 플랫폼 서비스 기획에 대해 매우 구체적인 '의사결정'을 내렸습니다. 단순히 '소심하게 베팅하지 마십시오'라는 글로 된 가이드를 주는 데 그치지 않고, 유저가 직접 마우스로 수치를 조정하며 스스로의 미래 자산 추이를 확인하고 습관을 교정할 수 있는 '실시간 샌드박스 시뮬레이터 기능을 대시보드 플랫폼에 핵심 스펙으로 포함하여 상용 배포하기로 결정'한 것입니다."
+이 데이터를 근거로, 저는 첫 번째 '핵심 의사결정'을 내렸습니다. 단순히 '소심하게 베팅하지 마십시오'라는 글로 된 가이드를 주는 데 그치지 않고, 유저가 직접 마우스로 수치를 조정하며 스스로의 미래 자산 추이를 확인하고 습관을 교정할 수 있는 '실시간 샌드박스 시뮬레이터 기능을 대시보드 플랫폼에 핵심 스펙으로 포함하여 상용 배포하기로 결정'한 것입니다."
 
 [용어 리마인더]
 - Churn(이탈): 포커 게임에서는 올바른 습관을 가지지 못해 파산하고 아예 앱을 삭제하는 최악의 유저 행동.
@@ -263,7 +273,7 @@ def main():
     add_header(slide3, "02. 활용 데이터 및 ETL 파이프라인 수립", "DATA & ETL PIPELINE")
     
     add_card(
-        slide3, 0.8, 1.8, 5.6, 4.8, 
+        slide3, CARD_LEFT, CARD_TOP, CARD_WIDTH, CARD_HEIGHT, 
         "비정형 데이터 모델링 및 적재 역할",
         [
             "■ 활용 데이터 (What)",
@@ -272,18 +282,21 @@ def main():
             "  - ★10만 행 이상의 플레이어별 상세 액션 로그 분석",
             "",
             "■ 본인의 핵심 설계 역할 (How)",
-            "  - **정규표현식(Regex) 파서 설계**: 줄글 형태의 원천 텍스트에서 베팅 금액, 플레이어명, 액션 단계를 필터 오차 없이 파싱",
-            "  - **스타 스키마(Star Schema) 모델링**: DW 설계 표준인 Fact(`hands`, `actions`) 및 Dimension(`players`, `tournaments`) 구조 설계",
-            "  - **이중 DB 호환성**: 가벼운 SQLite 파일 DB와 상용 PostgreSQL DB 간에 환경 변수 1개로 적재 및 조회를 전환하는 호환 레이어 구현"
+            "  - **Regex 파서 설계**: 텍스트 형태의 원천 로그에서",
+            "    베팅액, 플레이어명, 액션 단계를 필터 오차 없이 파싱",
+            "  - **스타 스키마 모델링**: DW 설계 표준인 Fact(`hands`,",
+            "    `actions`) 및 Dimension(`players`, `tournaments`) 구조 설계",
+            "  - **이중 DB 호환**: SQLite 로컬 DB와 PostgreSQL 상용 DB 간에",
+            "    환경 변수 하나로 스위칭 전환 가능한 호환 커넥터 구현"
         ]
     )
     
     # 우측 Streamlit 데이터 마트 화면 연동
-    add_image_or_placeholder(slide3, "tab2_profiling_1781002574421.png", 6.9, 1.8, 5.6, 4.2)
+    add_image_or_placeholder(slide3, "tab2_profiling_1781002574421.png", IMG_LEFT, IMG_TOP, IMG_WIDTH, IMG_HEIGHT)
     
     # 슬라이드 3 노트 설정
     set_presenter_notes(slide3, """[슬라이드 3 발표 대본]
-"두 번째로 활용한 데이터 스펙과 파이프라인 구축 과정에서 제가 수행한 역할입니다.
+"두 번째로 활용한 데이터 스펙과 데이터 파이프라인 구축 과정에서 제가 수행한 역할입니다.
 
 원천 데이터는 140개의 비정형 포커 게임 텍스트 로그 파일입니다. 약 7,993개의 게임 판수와 932명의 플레이어가 남긴 10만 행 이상의 상세 배팅 로그로 구성되어 있었습니다.
 
@@ -304,25 +317,25 @@ def main():
     add_header(slide4, "03. 통계적 가설 검정 및 의사결정 프로세스", "STATISTICS & MACHINE LEARNING")
     
     add_card(
-        slide4, 0.8, 1.8, 5.6, 4.8, 
+        slide4, CARD_LEFT, CARD_TOP, CARD_WIDTH, CARD_HEIGHT, 
         "통계 기반 가설 검정 및 성향 예측 모델",
         [
             "■ 가설 설정 및 A/B 테스트 검정",
-            "  - 가설: 프리미엄 패를 쥐었을 때 선공(A)으로 진입한 집단이 단순 콜(B)로만 진입한 집단보다 수익이 유의미하게 높을 것이다.",
+            "  - 가설: 프리미엄 카드 진입 시 선공(A)이 소극적 콜(B)보다 수익이 높을 것이다.",
             "  - 독립표본 T-검정 수행 -> p-value = 0.6372로 가설 기각.",
             "",
             "■ ★데이터 분석 기반의 프로세스 의사결정",
-            "  - 분석 결과 기각되었으나 단순히 기각으로 결론짓지 않고,",
-            "  - **'대조군인 콜 진입 집합의 표본 크기가 극히 적어 통계적 검정력이 부족했음을 정밀 진단하여, 유저에게 왜곡된 팩트를 가이드하는 대신 표본 보완책(성향점수 매칭, 부트스트랩)을 분석 엔진에 즉각 주입하기 전까지 비즈니스 판단을 유보하고 분석 방식을 보완하는 결정을 내림'**.",
+            "  - 대조군(소극 진입)의 표본수가 극히 작아 생긴 통계 오류(검정력 부족) 진단",
+            "  - **'통계적 신뢰성을 가질 때까지 성급한 비즈니스 지침 판단을 유보하고, 성향점수 매칭(PSM) 및 부트스트랩을 도입하여 통계 엔진을 전면 보완하기로 의사결정'**함.",
             "",
             "■ 군집화 및 예측 모델",
-            "  - K-Means 알고리즘으로 유저 4대 성향 코호트 자동 분류",
-            "  - Random Forest를 연동해 유저 지표 기반 흑자 예측 (Accuracy 84%)"
+            "  - K-Means 알고리즘 적용: 유저 4대 성향 코호트 자동 분류",
+            "  - Random Forest Classifier 연동: 유저 흑자 여부 예측 (Accuracy 84%)"
         ]
     )
     
     # 우측 Streamlit 가설 검정 화면 연동
-    add_image_or_placeholder(slide4, "tab4_ab_test_1781002593463.png", 6.9, 1.8, 5.6, 4.2)
+    add_image_or_placeholder(slide4, "tab4_ab_test_1781002593463.png", IMG_LEFT, IMG_TOP, IMG_WIDTH, IMG_HEIGHT)
     
     # 슬라이드 4 노트 설정
     set_presenter_notes(slide4, """[슬라이드 4 발표 대본]
@@ -348,22 +361,22 @@ def main():
     add_header(slide5, "04. 분석 결과의 서비스화 및 의사결정 시뮬레이터", "PLATFORM SERVICE & SIMULATOR")
     
     add_card(
-        slide5, 0.8, 1.8, 5.6, 4.8, 
+        slide5, CARD_LEFT, CARD_TOP, CARD_WIDTH, CARD_HEIGHT, 
         "시뮬레이터 구현 및 유저 행동 변화 유도",
         [
             "■ 의사결정 보조 플랫폼 구현 (Streamlit)",
-            "  - Tableau 스타일 다차원 글로벌 필터 연동: 사이드바 필터 변경 즉시 백엔드 SQL 동적 렌더링",
-            "  - 실시간 ETL 데모: 유저 파일 업로드 시 정규표현식 파서 및 DB 적재 상황 실시간 애니메이션화",
+            "  - Tableau 스타일 필터: 사이드바 필터 변경 즉시 SQL 동적 렌더링",
+            "  - 실시간 ETL 데모: 업로드 시 파서 작동 및 실시간 진행바 표시",
             "",
             "■ ★플레이 스타일 샌드박스 시뮬레이터",
-            "  - 유클리드 거리를 사용해 DB 내 932명 중 나와 가장 성격이 비슷한 3명의 실제 유저 자동 추적 매칭",
-            "  - **의사결정 활용**: 유저가 자신의 VPIP, PFR, AF를 조정했을 때 매칭 유저 3인의 30세션 누적 자산 추이 대조 렌더링",
-            "  - **효과**: 유저가 무리한 베팅(Loose-Passive)을 고치지 않으면 몇 판 뒤 파산(이탈)할 확률을 시계열로 직접 모의실험하도록 하여 플레이 전략 개선 유도"
+            "  - 유클리드 거리 기준으로 DB 내 나와 지표가 가장 근접한 실제 유저 3명 자동 추적 매칭",
+            "  - **의사결정 활용**: VPIP, PFR, AF 조정 시 매칭 유저의 30세션 누적 자산 추이 대조 렌더링",
+            "  - **비즈니스 임팩트**: 무리한 베팅(Loose-Passive) 습관이 미래 자산 파산에 미치는 영향을 모의실험하게 유도해 유저 행동 개선 자극"
         ]
     )
     
     # 우측 Streamlit 시뮬레이터 화면 연동
-    add_image_or_placeholder(slide5, "tab5_simulator_done_1781002631767.png", 6.9, 1.8, 5.6, 4.2)
+    add_image_or_placeholder(slide5, "tab5_simulator_done_1781002631767.png", IMG_LEFT, IMG_TOP, IMG_WIDTH, IMG_HEIGHT)
     
     # 슬라이드 5 노트 설정
     set_presenter_notes(slide5, """[슬라이드 5 발표 대본]
@@ -374,7 +387,7 @@ def main():
 우측에 보이시는 '시나리오 시뮬레이터' 화면이 바로 그것입니다. 이 플랫폼의 샌드박스 플레이그라운드에서 유저가 본인의 VPIP, PFR, AF 슬라이더를 마우스로 자유롭게 조정하면, 머신러닝의 유클리드 거리 공식을 통해 데이터베이스 내 932명의 유저 중 지표상 가장 비슷한 성향을 가진 실제 유저 3명을 매칭합니다.
 그리고 그 매칭된 유저 3명이 30세션 동안 게임을 치르면서 누적시킨 칩의 시계열 자산 추이 그래프를 대조하여 즉각 그려줍니다.
 
-만약 유저가 돈을 크게 잃고 이탈할 수밖에 없는 Loose-Passive 상태를 설정하면, 화면에는 3인의 유저 자산 그래프가 가파르게 우하향하며 파산하는 모습이 그려집니다. 유저는 이 시뮬레이션을 통해 본인의 잘못된 플레이 전략이 미래 자산에 미칠 충격을 직접 체감하고, 지표를 개선(VPIP 15~22%, AF 2.0~3.5)하여 우상향하는 그래프를 매칭받도록 본인의 전략 의사결정을 수정하게 됩니다."
+만약 유저가 돈을 크게 잃고 이탈할 수밖에 없는 Loose-Passive 상태를 설정하면, 화면에는 3인의 유저 자산 그래프가 가파르게 우하향하며 파산하는 모습을 직접 목격하게 됩니다. 유저는 이 시뮬레이션을 통해 본인의 잘못된 플레이 전략이 미래 자산에 미칠 충격을 직접 체감하고, 지표를 개선(VPIP 15~22%, AF 2.0~3.5)하여 우상향하는 그래프를 매칭받도록 본인의 플레이 전략을 스스로 변경하는 행동 개선 의사결정을 내릴 수 있게 됩니다."
 
 [용어 리마인더]
 - 유클리드 거리: 지표 공간 내 두 점 간의 직선거리. 여기선 '나와 가장 성격이 비슷한 3명의 유저'를 찾을 때 쓰는 거리 계산 공식.
@@ -387,21 +400,21 @@ def main():
     add_header(slide6, "05. 성과 및 향후 고도화 로드맵", "SUCCESS & ROADMAP")
     
     add_card(
-        slide6, 0.8, 1.8, 5.6, 4.8, 
+        slide6, CARD_LEFT, CARD_TOP, CARD_WIDTH, CARD_HEIGHT, 
         "분석 과정의 성과 및 향후 개선 사항",
         [
             "■ 분석 과정에서 잘된 점 (Successes)",
             "  - **비정형 데이터의 RDBMS 정형화**: 자유 텍스트 로그를 Fact/Dimension 스타 스키마로 설계하여 다차원 글로벌 쿼리 성능 극대화",
             "  - **분석의 서비스화(MaaS) 성공**: 단방향 수치 요약 보고서에 그치지 않고 인터랙티브 시뮬레이션 웹서비스로 상용 배포하여 데이터 활용성 극대화",
             "",
-            "■ 개선이 필요한 점 및 향후 계획 (Roadmap)",
+            "■ 개선 필요 사항 및 향후 계획 (Roadmap)",
             "  - **통계적 신뢰도 보완**: T-Test의 대조군 표본 부족 현상 해결을 위해 성향점수 매칭(PSM) 및 부트스트랩 리샘플링 적용 추진",
             "  - **아키텍처 확장**: 단일 RDBMS 동시성 병목 우려 대응을 위한 실시간 Apache Kafka 큐, Apache Spark 분산 엔진 도입 및 GCP BigQuery 클라우드 DW 마이그레이션 로드맵 수립"
         ]
     )
     
     # 우측 Streamlit 퍼널/코호트 분석 화면 연동
-    add_image_or_placeholder(slide6, "tab3_funnel_cohort_1781002583397.png", 6.9, 1.8, 5.6, 4.2)
+    add_image_or_placeholder(slide6, "tab3_funnel_cohort_1781002583397.png", IMG_LEFT, IMG_TOP, IMG_WIDTH, IMG_HEIGHT)
     
     # 슬라이드 6 노트 설정
     set_presenter_notes(slide6, """[슬라이드 6 발표 대본]
