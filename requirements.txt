@@ -7,3 +7,4 @@ streamlit
 psycopg2-binary
 koreanize-matplotlib
 reportlab
+python-pptx
